@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
@@ -28,7 +29,16 @@ func CheckAuthCookie(c *fiber.Ctx) error {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		log.Println(claims)
+		expiryTime := claims["exp"].(float64)
+
+		if time.Now().Unix() > int64(expiryTime) {
+			c.Cookie(&fiber.Cookie{
+				Name:  "token",
+				Value: "",
+			})
+
+			return c.SendStatus(fiber.StatusUnauthorized)
+		}
 	} else {
 		log.Println("error when parsing claims")
 	}
