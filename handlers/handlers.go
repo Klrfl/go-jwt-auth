@@ -54,10 +54,10 @@ func Login(c *fiber.Ctx) error {
 		})
 	}
 
-	//TODO: make JWT token
 	expirationTime := time.Now().Add(1 * time.Hour).UTC()
 	now := time.Now().UTC()
 	key := os.Getenv("SECRET")
+
 	claims := &models.JWTClaim{
 		Name:  incomingUser.Name,
 		Email: incomingUser.Email,
